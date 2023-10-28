@@ -1,12 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import { useRouter } from "next/navigation"
-import { Axios } from "axios"
+import  axios  from "axios"
 import { Toast } from "react-hot-toast"
+import { log } from "console"
 
 export default function SignUpPage(){
+   
+    const router = useRouter();
 
    const [user, setUser] = useState({
     email: "",
@@ -14,9 +17,39 @@ export default function SignUpPage(){
     username: ""
    })
 
-   const onSignup = () => {
+   const [buttonDisabled, setButtonDisabled] = useState(false);
+   const [loading, setLoading] = useState(false);
 
+   const onSignup = async () => {
+        try {
+
+            setLoading(true);
+            const response = await axios.post('/api/user/signup', user)
+            console.log("Signup success", response.data);
+            router.push("/login");
+        } 
+        
+        catch (error : any) {
+            console.log("SignUp failed", error.message)
+            //toast.error(error.message)
+        }
+
+        finally {
+            setLoading(false);
+        }
    }
+
+   useEffect(() =>{
+    if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0)
+    {
+        setButtonDisabled(false);
+    }
+    else{
+        setButtonDisabled(true);
+    }
+   
+})
+
 
     return (
        <>
@@ -24,7 +57,7 @@ export default function SignUpPage(){
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
         {/* <h1>{loading ? "Processing" : "Signup"}</h1> */}
         <h1 className="text-center text-black bg-orange-600 rounded-md" >
-            SignUp Page</h1>
+            {loading ? "Processing Please Wait!" : "SignUp Page"}</h1>
             
         <hr />
         <br/>        
@@ -69,8 +102,8 @@ export default function SignUpPage(){
             <button
             onClick={onSignup}
             className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none 
-            focus:border-gray-600">SignUp Here
-            </button>
+            focus:border-gray-600">{buttonDisabled ? "No Sign Up" : "SignUp"}</button>
+          
 
 
             <div className="text-black bg-yellow-500 rounded-md">
