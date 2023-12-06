@@ -31,7 +31,7 @@ export default function SignUpPage(){
         
         catch (error : any) {
             console.log("SignUp failed", error.message)
-            //toast.error(error.message)
+            throw error;
         }
 
         finally {

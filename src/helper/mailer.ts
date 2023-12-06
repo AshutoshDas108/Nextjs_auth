@@ -10,33 +10,33 @@ export const sendEmail = async({email, emailType, userId}:any) => {
 
         if (emailType === "VERIFY") {
             await User.findByIdAndUpdate(userId, 
-                {verifyToken: hashedToken, verifyTokenExpiry: Date.now() + 3600000})
+                {verifyToken: hashedToken, 
+                    verifyTokenExpiry: Date.now() + 3600000
+                })
+
         } else if (emailType === "RESET"){
             await User.findByIdAndUpdate(userId, 
-                {forgotPasswordToken: hashedToken, forgotPasswordTokenExpiry: Date.now() + 3600000})
+                {forgotPasswordToken: hashedToken,
+                     forgotPasswordTokenExpiry: Date.now() + 3600000
+                    })
         }
 
-        var transport = nodemailer.createTransport({
+        const transport = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
             port: 2525,
-           auth: {
+            auth: {
               user: "eeee4ef832b4b6",
-               pass: "********19bf"
-             }
+              pass: "********19bf"
+            }
           });
 
 
-        const mailOptions = {
-            from: 'hitesh@gmail.com',
+          const mailOptions = {
+            from: 'ashutosh@gmail.com',
             to: email,
             subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
-            html: `<p>Click 
-            <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}
-            ">here</a>
-             to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
-             or copy and paste the link below in your browser.
-             <br>
-              ${process.env.DOMAIN}/verifyemail?token=${hashedToken}
+            html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
+            or copy and paste the link below in your browser. <br> ${process.env.DOMAIN}/verifyemail?token=${hashedToken}
             </p>`
         }
 
